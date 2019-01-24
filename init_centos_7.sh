@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Install the git package provided by WANdisco
 function fn_install_pacakge_wandisco_git() {
     # WANdisco git variables
