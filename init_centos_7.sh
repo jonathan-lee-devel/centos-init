@@ -184,7 +184,7 @@ function fn_main() {
     echo "Running initalization script..." &&
     fn_pre_check_all && # Check script running as root
     fn_install_all_packages && # Install required packages
-    fn_remove_all_packages && # Uninstall Apache web server
+    fn_remove_all_packages && # Uninstall unnecessary packages
     fn_configure_all_packages &&
     fn_clean_up && # Remove leftover files
     echo "Ran initialization script!"
