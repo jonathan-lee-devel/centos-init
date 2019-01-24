@@ -1,5 +1,5 @@
 # Install the git package provided by WANdisco
-function install_pacakge_wandisco_git() {
+function fn_install_pacakge_wandisco_git() {
     # WANdisco git variables
     wandiscoGitRepoFile=wandisco-git.repo
     wandiscoGitFileDest=/etc/yum.repos.d/ # Location to store the .repo file for yum
@@ -19,7 +19,7 @@ function install_pacakge_wandisco_git() {
 }
 
 # Install the NGINX package, as well as the required EPEL package
-function install_package_nginx() {
+function fn_install_package_nginx() {
     echo "Installing nginx..." &&
     yum install -y epel-release && # Install EPEL package
     yum install -y nginx && # Install NGINX
@@ -29,18 +29,19 @@ function install_package_nginx() {
 }
 
 # Install the Node.js & npm package provided by nodesource.com, as well as dependencies
-function install_package_nodejs() {
+function fn_install_package_nodejs() {
     echo "Installing Node.js..." &&
     yum install -y gcc-c++ make && # Install dependencies
     curl -sL https://rpm.nodesource.com/setup_10.x | bash - && # Add nodesource repo
-    yum install -y nodejs && echo "Node.js version: " && # Install Node.js
+    yum install -y nodejs &&
+    echo "Node.js version: " && # Install Node.js
     node -v &&
     echo "NPM version: " npm -v &&
     echo "Installed Node.js!"
 }
 
 # Install the PM2 NPM package
-function install_package_pm2() {
+function fn_install_package_pm2() {
     echo "Installing PM2..." &&
     npm install -g PM2 && # Install PM2
     echo "PM2 Version: " &&
@@ -49,7 +50,7 @@ function install_package_pm2() {
 }
 
 # Stop, disable, and remove the Apache web server
-function remove_package_apache_web() {
+function fn_remove_package_apache_web() {
     echo "Uninstalling Apache web server..." &&
     systemctl stop httpd && # Stop the service
     systemctl disable httpd && # Disable the service
@@ -57,7 +58,7 @@ function remove_package_apache_web() {
     echo "Uninstalled Apache web server!"
 }
 
-function configure_package_nginx() {
+function fn_configure_package_nginx() {
     # Port variables
     standard_http_port=80
     standard_https_port=443
@@ -117,7 +118,7 @@ function configure_package_nginx() {
     echo "DEBUG: Check if nginx master process is running as root!!!"
 }
 
-function configure_package_pm2() {
+function fn_configure_package_pm2() {
     # Create pm2 configuration for node user
     # TODO Create file and change permissions
     pm2ConfigurationFileDest=/var/node/pm2/
@@ -126,40 +127,40 @@ function configure_package_pm2() {
 }
 
 # Update yum and install all of the necessary packages
-function install_all_packages() {
+function fn_install_all_packages() {
     echo "Beginning installation of required packages..." &&
     echo "Updating yum..." &&
     yum update -y && # Update yum
     echo "Yum updated!" &&
-    install_pacakge_wandisco_git && # Install git
-    install_package_nginx && # Install NGINX
-    install_package_nodejs && # Install Node.js
-    install_package_pm2 && # Install PM2
+    fn_install_pacakge_wandisco_git && # Install git
+    fn_install_package_nginx && # Install NGINX
+    fn_install_package_nodejs && # Install Node.js
+    fn_install_package_pm2 && # Install PM2
     echo "Installed packages!"
 }
 
 # Stop & uninstall all unnecessary packages
-function remove_all_packages() {
+function fn_remove_all_packages() {
     echo "Beginning uninstallation of unnecessary packages..." &&
-    remove_package_apache_web &&
+    fn_remove_package_apache_web &&
     echo "Uninstalled unnecessary packages!"
 }
 
 # Configure all of the packages
-function configure_all_packages() {
-    configure_package_nginx &&
-    configure_package_pm2
+function fn_configure_all_packages() {
+    fn_configure_package_nginx &&
+    fn_configure_package_pm2
 }
 
 # Clean up leftover files used by the script
-function clean_up() {
+function fn_clean_up() {
     echo "Cleaning up leftover files..." &&
     rm *.repo *.service *.js *.conf && #  Remove leftover files
     echo "Cleaned up leftover files!"
 }
 
 # Ensure that the script is being run as root, otherwise exit
-function root_check() {
+function fn_root_check() {
     if [ "$EUID" -ne 0 ] # Check if root
     then
         echo "Intialization script must be run as root, Exiting!" &&
@@ -167,15 +168,26 @@ function root_check() {
     fi
 }
 
+# Ensure that all files exist
+function fn_file_check() {
+
+}
+
+# Ensure that all pre-checks pass
+function fn_pre_check_all() {
+    fn_root_check
+    fn_file_check
+}
+
 # Calls all necessary functions in required order
-function main() {
+function fn_main() {
     echo "Running initalization script..." &&
-    root_check && # Check script running as root
-    install_all_packages && # Install required packages
-    remove_package_apache_web && # Uninstall Apache web server
-    configure_all_packages &&
-    clean_up && # Remove leftover files
+    fn_pre_check_all && # Check script running as root
+    fn_install_all_packages && # Install required packages
+    fn_remove_all_packages && # Uninstall Apache web server
+    fn_configure_all_packages &&
+    fn_clean_up && # Remove leftover files
     echo "Ran initialization script!"
 }
 
-main # Calls all of the necessary functions
+fn_main # Calls all of the necessary functions
