@@ -6,16 +6,16 @@ function fn_install_pacakge_wandisco_git() {
     wandiscoGitRpmGpgKeyLink=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco # Link to the RPM GPG key
 
     if [ ! -f $wandiscoGitRepoFile ]; then
-        echo "Error: Failed to install git, missing required file: $wandiscoGitRepoFile"
+        echo "Error: Failed to install git, missing required file: $wandiscoGitRepoFile" # TODO decide whether file checks should be performed per function ######
+    else
+        echo "Installing git..." &&
+        mv -f wandisco-git.repo $wandiscoGitRepoFilePath && # Add repo to yum
+        rpm --import $wandiscoGitRpmGpgKeyLink && # Import GPG key into RPM
+        yum install -y git Install git && # Install git
+        echo "Git Version: " &&
+        git --version &&
+        echo "Installed git!"
     fi
-    
-    echo "Installing git..." &&
-    mv -f wandisco-git.repo $wandiscoGitRepoFilePath && # Add repo to yum
-    rpm --import $wandiscoGitRpmGpgKeyLink && # Import GPG key into RPM
-    yum install -y git Install git && # Install git
-    echo "Git Version: " &&
-    git --version &&
-    echo "Installed git!"
 }
 
 # Install the NGINX package, as well as the required EPEL package
