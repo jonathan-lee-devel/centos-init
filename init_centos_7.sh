@@ -12,9 +12,14 @@ function fn_install_pacakge_wandisco_git() {
         mv -f wandisco-git.repo $wandiscoGitRepoFilePath && # Add repo to yum
         rpm --import $wandiscoGitRpmGpgKeyLink && # Import GPG key into RPM
         yum install -y git Install git && # Install git
-        echo "Git Version: " &&
-        git --version &&
-        echo "Installed git!"
+
+        gitVersionCheckOutput="$(git --version)" # Simply check installation success based on version output
+        if [ $nginxVersionCheckOutput ]; then
+            echo "git Version: $gitVersionCheckOutput" &&
+            echo "Installed git!"
+        else
+            echo "git installation appears to have failed!"
+        fi
     fi
 }
 
