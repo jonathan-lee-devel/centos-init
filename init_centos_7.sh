@@ -14,7 +14,7 @@ function fn_install_pacakge_wandisco_git() {
         yum install -y git && # Install git
 
         gitVersionCheckOutput="$(git --version)" # Simply check installation success based on version output
-        if [ $nginxVersionCheckOutput ]; then
+        if [ $gitVersionCheckOutput ]; then
             echo "git Version: $gitVersionCheckOutput" &&
             echo "Installed git!"
         else
