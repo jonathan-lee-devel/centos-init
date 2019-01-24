@@ -23,9 +23,14 @@ function fn_install_package_nginx() {
     echo "Installing nginx..." &&
     yum install -y epel-release && # Install EPEL package
     yum install -y nginx && # Install NGINX
-    echo "NGINX Version: " &&
-    nginx -v &&
-    echo "Installed NGINX!"
+
+    nginxVersionCheckOutput="$(nginx -v)" # Simply check installation success based on version output
+    if [ $nginxVersionCheckOutput ]; then
+        echo "NGINX Version: $nginxVersionCheckOutput" &&
+        echo "Installed NGINX!"
+    else
+        echo "NGINX installation appears to have failed!"
+    fi
 }
 
 # Install the Node.js & npm package provided by nodesource.com, as well as dependencies
@@ -33,20 +38,31 @@ function fn_install_package_nodejs() {
     echo "Installing Node.js..." &&
     yum install -y gcc-c++ make && # Install dependencies
     curl -sL https://rpm.nodesource.com/setup_10.x | bash - && # Add nodesource repo
-    yum install -y nodejs &&
-    echo "Node.js version: " && # Install Node.js
-    node -v &&
-    echo "NPM version: " npm -v &&
-    echo "Installed Node.js!"
+    yum install -y nodejs && # Install Node.js
+
+    nodejsVersionOutput="$(node -v)" &&
+    npmVersionOutput="$(npm -v)" &&
+    if [ $nodejsVersionOutput && $npmVersionOutput ]; then
+        echo "Node.js Version: $nodejsVersionOutput" &&
+        echo "NPM Version: $npmVersionOutput" &&
+        echo "Installed Node.js!"
+    else
+        echo "Node.js installation appears to have failed!"
+    fi
 }
 
 # Install the PM2 NPM package
 function fn_install_package_pm2() {
     echo "Installing PM2..." &&
     npm install -g PM2 && # Install PM2
-    echo "PM2 Version: " &&
-    pm2 --version &&
-    echo "Installed PM2!"
+
+    pm2VersionCheckOutput="$(pm2 --version)" # Simply check installation success based on version output
+    if [ $pm2VersionCheckOutput ]; then
+        echo "PM2 Version: $pm2VersionCheckOutput" &&
+        echo "Installed PM2!"
+    else
+        echo "PM2 installation appears to have failed!"
+    fi
 }
 
 # Stop, disable, and remove the Apache web server
